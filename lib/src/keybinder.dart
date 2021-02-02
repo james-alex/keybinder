@@ -272,11 +272,11 @@ class Keybinding {
     Keybinding keybinding;
 
     if (other is Keybinding) {
-      keybinding = Keybinding(keyCodes.toList() + other.keyCodes.toList());
+      keybinding = Keybinding(keyCodes + other.keyCodes);
     } else if (other is KeyCode) {
-      keybinding = Keybinding(keyCodes.toList()..add(other));
+      keybinding = Keybinding(keyCodes + [other]);
     } else if (other is Iterable<KeyCode>) {
-      keybinding = Keybinding(keyCodes.toList() + other.toList());
+      keybinding = Keybinding(keyCodes + other);
     }
 
     return keybinding;
