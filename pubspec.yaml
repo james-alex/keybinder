@@ -1,8 +1,8 @@
 name: keybinder
 description: >-
   A utility class used to bind callbacks to a combination
-  of one or more physical keys on a keyboard.
-version: 0.1.0+1
+  of zero or more physical keys on a keyboard.
+version: 0.1.0+2
 homepage: https://github.com/james-alex/keybinder
 
 environment:
