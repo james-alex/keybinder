@@ -189,7 +189,7 @@ class Keybinding {
   }
 
   /// The [KeyCode]s that make up the keybinding.
-  final List<KeyCode> keyCodes;
+  final Iterable<KeyCode> keyCodes;
 
   /// If `true`, this keybinding will be activated when all of its keys
   /// are pressed, even if other keys have been pressed in addition.
@@ -272,11 +272,11 @@ class Keybinding {
     Keybinding keybinding;
 
     if (other is Keybinding) {
-      keybinding = Keybinding(keyCodes + other.keyCodes);
+      keybinding = Keybinding(keyCodes.toList() + other.keyCodes.toList());
     } else if (other is KeyCode) {
       keybinding = Keybinding(keyCodes.toList()..add(other));
     } else if (other is Iterable<KeyCode>) {
-      keybinding = Keybinding(keyCodes + other);
+      keybinding = Keybinding(keyCodes.toList() + other.toList());
     }
 
     return keybinding;
