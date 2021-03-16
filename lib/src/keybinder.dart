@@ -11,7 +11,7 @@ class Keybinder {
   /// A reference to the global [RawKeyboard] instance.
   ///
   /// If `null`, it's assumed a listener hasn't been added.
-  static RawKeyboard _rawKeyboard;
+  static RawKeyboard? _rawKeyboard;
 
   /// Every [Keybinding]s registered to [Keybinder] and their associated callbacks.
   static final _keybindings = <Keybinding, List<Function>>{};
@@ -34,7 +34,7 @@ class Keybinder {
         return false;
       }
 
-      for (var callback in _keybindings[keybinding]) {
+      for (var callback in _keybindings[keybinding]!) {
         if (callback is KeybindingEvent) {
           callback(keybinding, false);
         } else if (callback is ValueChanged<bool>) {
@@ -49,7 +49,7 @@ class Keybinder {
     // notify their listeners.
     for (var keybinding in _keybindings.keys) {
       if (keybinding.isPressed && !_activeKeybindings.contains(keybinding)) {
-        for (var callback in _keybindings[keybinding]) {
+        for (var callback in _keybindings[keybinding]!) {
           if (callback is KeybindingEvent) {
             callback(keybinding, true);
           } else if (callback is ValueChanged<bool>) {
@@ -64,10 +64,8 @@ class Keybinder {
   }
 
   /// Returns `true` if the [keybinding] is bound to any callbacks.
-  static bool isActive(Keybinding keybinding) {
-    assert(keybinding != null);
-    return _keybindings.containsKey(keybinding);
-  }
+  static bool isActive(Keybinding keybinding) =>
+      _keybindings.containsKey(keybinding);
 
   /// Binds the [callback] to [keybinding] in the [Keybinder].
   ///
@@ -77,12 +75,10 @@ class Keybinder {
   /// [Keybinding] parameter and a boolean parameter:
   /// `void Function(Keybinding keybinding, bool pressed)`.
   static void bind(Keybinding keybinding, Function callback) {
-    assert(keybinding != null);
     assert(
-        callback != null &&
-            (callback is VoidCallback ||
-                callback is ValueChanged<bool> ||
-                callback is KeybindingEvent),
+        callback is VoidCallback ||
+            callback is ValueChanged<bool> ||
+            callback is KeybindingEvent,
         '[callback] must be a [VoidCallback], `ValueChanged<bool>`, '
         'or a [KeybindingEvent].');
 
@@ -91,7 +87,7 @@ class Keybinder {
 
     // Add the callback to the [_keybindings] map.
     if (_keybindings.containsKey(keybinding)) {
-      _keybindings[keybinding].add(callback);
+      _keybindings[keybinding]!.add(callback);
     } else {
       _keybindings.addAll({
         keybinding: [callback],
@@ -108,9 +104,7 @@ class Keybinder {
   /// Returns `false` if the [keybinding] isn't bound to any callbacks,
   /// of if [callback] was provided, but wasn't bound to [keybinding],
   /// otherwise returns `true`.
-  static bool remove(Keybinding keybinding, [Function callback]) {
-    assert(keybinding != null);
-
+  static bool remove(Keybinding keybinding, [Function? callback]) {
     if (!_keybindings.containsKey(keybinding)) {
       return false;
     }
@@ -122,11 +116,11 @@ class Keybinder {
       return true;
     }
 
-    final wasRemoved = _keybindings[keybinding].remove(callback);
+    final wasRemoved = _keybindings[keybinding]!.remove(callback);
 
     // If there are no longer any callbacks registered to [keybinding],
     // remove it from the map.
-    if (wasRemoved && _keybindings[keybinding].isEmpty) {
+    if (wasRemoved && _keybindings[keybinding]!.isEmpty) {
       _keybindings.remove(keybinding);
     }
 
@@ -140,7 +134,7 @@ class Keybinder {
   /// instance if another [Keybinding] is [register]ed.
   static void dispose() {
     _keybindings.clear();
-    _rawKeyboard.removeListener(_listener);
+    _rawKeyboard?.removeListener(_listener);
     _rawKeyboard = null;
   }
 }
@@ -170,9 +164,7 @@ class Keybinding {
   ///
   /// __Note:__ Empty [Keybinding]s are only triggered when no other keys
   /// are pressed, regardless of whether [inclusive] is `true` or not.
-  const Keybinding(this.keyCodes, {this.inclusive = false, this.debugLabel})
-      : assert(keyCodes != null),
-        assert(inclusive != null);
+  const Keybinding(this.keyCodes, {this.inclusive = false, this.debugLabel});
 
   /// Creates a [Keybinding] mapped to no keys.
   factory Keybinding.empty() => Keybinding([]);
@@ -182,8 +174,6 @@ class Keybinding {
     Iterable<LogicalKeyboardKey> keys, {
     bool inclusive = false,
   }) {
-    assert(keys != null);
-    assert(inclusive != null);
     return Keybinding(keys.map<KeyCode>((key) => KeyCode({key.keyId})).toList(),
         inclusive: inclusive);
   }
@@ -199,7 +189,7 @@ class Keybinding {
   final bool inclusive;
 
   /// An optional label for debugging purposes; used by the [toString] method.
-  final String debugLabel;
+  final String? debugLabel;
 
   /// Returns `true` if this keybinding includes [keyCode].
   bool contains(KeyCode keyCode) => keyCodes.any((key) => key.equals(keyCode));
@@ -269,7 +259,7 @@ class Keybinding {
     assert(
         other is Keybinding || other is KeyCode || other is Iterable<KeyCode>);
 
-    Keybinding keybinding;
+    late Keybinding keybinding;
 
     if (other is Keybinding) {
       keybinding = Keybinding(keyCodes + other.keyCodes);
@@ -286,7 +276,7 @@ class Keybinding {
   ///
   /// __Note:__ [KeyCode]s are considered equivalent to one another
   /// if any one of their [keyId]s are the same.
-  bool equals(Keybinding other) {
+  bool equals(Keybinding? other) {
     if (other == null || keyCodes.length != other.keyCodes.length) {
       return false;
     }
@@ -337,17 +327,15 @@ class KeyCode {
   /// [keyIds] must not be `null`.
   ///
   /// [label] is optional and exists for the sake of external convenience.
-  const KeyCode(this.keyIds, {this.label}) : assert(keyIds != null);
+  const KeyCode(this.keyIds, {this.label});
 
   /// Creates a [KeyCode] from a [LogicalKeyboardKey].
-  factory KeyCode.from(KeyboardKey key, {String label}) {
-    assert(key != null);
+  factory KeyCode.from(KeyboardKey key, {String? label}) {
     return KeyCode({_getKeyId(key)}, label: label ?? _getKeyLabel(key));
   }
 
   /// Creates a [KeyCode] from a set of [LogicalKeyboardKey]s.
-  factory KeyCode.fromSet(Iterable<KeyboardKey> keys, {String label}) {
-    assert(keys != null);
+  factory KeyCode.fromSet(Iterable<KeyboardKey> keys, {String? label}) {
     return KeyCode(keys.map<int>((key) => _getKeyId(key)).toSet(),
         label: label);
   }
@@ -356,7 +344,7 @@ class KeyCode {
   final Set<int> keyIds;
 
   /// The optional label of the key(s) represented by this [KeyCode].
-  final String label;
+  final String? label;
 
   /// A [KeyCode] representing both `alt` keys.
   static const alt = KeyCode({0x001000700e2, 0x001000700e6}, label: 'alt');
@@ -386,7 +374,7 @@ class KeyCode {
       : (key as PhysicalKeyboardKey).usbHidUsage;
 
   /// Returns the label representing [key].
-  static String _getKeyLabel(KeyboardKey key) => key is LogicalKeyboardKey
-      ? key.keyLabel ?? key.debugName
+  static String? _getKeyLabel(KeyboardKey key) => key is LogicalKeyboardKey
+      ? key.keyLabel
       : (key as PhysicalKeyboardKey).debugName;
 }

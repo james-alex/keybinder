@@ -2,20 +2,20 @@ name: keybinder
 description: >-
   A utility class used to bind callbacks to a combination
   of zero or more physical keys on a keyboard.
-version: 0.1.0+3
+version: 1.0.0
 homepage: https://github.com/james-alex/keybinder
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  list_utilities: ^0.1.2
-  provider: ^4.3.2+4
+  list_utilities: ^1.0.0
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.9.2
+  pedantic: ^1.11.0

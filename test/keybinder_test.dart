@@ -6,16 +6,16 @@ import 'package:list_utilities/list_utilities.dart';
 
 void main() {
   testWidgets('Keybinder', (_) async {
-    final pressed = <Keybinding, int>{null: 0};
-    final released = <Keybinding, int>{};
+    final pressed = <Keybinding?, int>{null: 0};
+    final released = <Keybinding?, int>{};
 
-    Keybinder.bind(Keybinding.empty(), () => pressed[null]++);
+    Keybinder.bind(
+        Keybinding.empty(), () => pressed[null] = pressed[null]! + 1);
     var empty = 0;
 
-    Completer<void> completer;
-    Future<void> onComplete;
-
-    Keybinding lastKeybinding;
+    late Completer<void> completer;
+    late Future<void> onComplete;
+    Keybinding? lastKeybinding;
 
     for (var i = 0; i < _keys.length; i++) {
       // Create a keybinding from a combination of 1-4 keys.
@@ -29,15 +29,17 @@ void main() {
       released.addAll({keybinding: 0});
 
       // Register the keybinding with all 3 types of callbacks.
-      void onPressed() => pressed[keybinding]++;
+      void onPressed() => pressed[keybinding] = pressed[keybinding]! + 1;
       Keybinder.bind(keybinding, onPressed);
 
-      void onToggle(bool isPressed) =>
-          isPressed ? pressed[keybinding]++ : released[keybinding]++;
+      void onToggle(bool isPressed) => isPressed
+          ? pressed[keybinding] = pressed[keybinding]! + 1
+          : released[keybinding] = released[keybinding]! + 1;
       Keybinder.bind(keybinding, onToggle);
 
-      void onKeyToggled(Keybinding keybinding, bool isPressed) =>
-          isPressed ? pressed[keybinding]++ : released[keybinding]++;
+      void onKeyToggled(Keybinding keybinding, bool isPressed) => isPressed
+          ? pressed[keybinding] = pressed[keybinding]! + 1
+          : released[keybinding] = released[keybinding]! + 1;
       Keybinder.bind(keybinding, onKeyToggled);
 
       // Bind a callback to complete a completer after
@@ -93,7 +95,7 @@ void main() {
 
         final lastKeybindingKeys = lastKeybinding.keyCodes
             .map<LogicalKeyboardKey>((keyCode) =>
-                LogicalKeyboardKey.findKeyByKeyId(keyCode.keyIds.first));
+                LogicalKeyboardKey.findKeyByKeyId(keyCode.keyIds.first)!);
         for (var key in lastKeybindingKeys) {
           await simulateKeyUpEvent(key);
         }
