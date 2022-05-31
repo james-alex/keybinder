@@ -4,14 +4,14 @@ import 'package:list_utilities/list_utilities.dart';
 
 /// A utility class used to bind callbacks to a combination
 /// of one or more physical keys on a keyboard; utilizing the
-/// global [RawKeyboard] instance.
+/// global [HardwareKeyboard] instance.
 class Keybinder {
   Keybinder._();
 
-  /// A reference to the global [RawKeyboard] instance.
+  /// A reference to the global [HardwareKeyboard] instance.
   ///
   /// If `null`, it's assumed a listener hasn't been added.
-  static RawKeyboard? _rawKeyboard;
+  static HardwareKeyboard? _HardwareKeyboard;
 
   /// Every [Keybinding]s registered to [Keybinder] and their associated callbacks.
   static final _keybindings = <Keybinding, List<Function>>{};
@@ -20,13 +20,16 @@ class Keybinder {
   static final _activeKeybindings = <Keybinding>{};
 
   /// Adds the listener that handles all registered
-  /// callbacks to the [RawKeyboard] instance.
+  /// callbacks to the [HardwareKeyboard] instance.
   static void _init() {
-    _rawKeyboard = RawKeyboard.instance..addListener(_listener);
+    _HardwareKeyboard = HardwareKeyboard.instance..addHandler(_listener);
   }
 
-  /// The listener provided to the [RawKeyboard] instance.
-  static void _listener(RawKeyEvent event) {
+  /// The listener provided to the [HardwareKeyboard] instance.
+  static bool _listener(KeyEvent event) {
+
+    var handeled = false;
+
     // If any of the registered [Keybinding]s are no longer being pressed,
     // notify their listeners.
     _activeKeybindings.removeWhere((keybinding) {
@@ -59,8 +62,10 @@ class Keybinder {
           }
         }
         _activeKeybindings.add(keybinding);
+        handeled = true;
       }
     }
+    return handeled;
   }
 
   /// Returns `true` if the [keybinding] is bound to any callbacks.
@@ -82,8 +87,8 @@ class Keybinder {
         '[callback] must be a [VoidCallback], `ValueChanged<bool>`, '
         'or a [KeybindingEvent].');
 
-    // Initialize the [RawKeyboard] listener, if it hasn't already been.
-    if (_rawKeyboard == null) _init();
+    // Initialize the [HardwareKeyboard] listener, if it hasn't already been.
+    if (_HardwareKeyboard == null) _init();
 
     // Add the callback to the [_keybindings] map.
     if (_keybindings.containsKey(keybinding)) {
@@ -128,14 +133,14 @@ class Keybinder {
   }
 
   /// Removes all registered callbacks from [Keybinder] and removes
-  /// [Keybinder]'s listener from the [RawKeyboard] instance.
+  /// [Keybinder]'s listener from the [HardwareKeyboard] instance.
   ///
-  /// __Note:__ A new listener will be added to the [RawKeyboard]
+  /// __Note:__ A new listener will be added to the [HardwareKeyboard]
   /// instance if another [Keybinding] is [register]ed.
   static void dispose() {
     _keybindings.clear();
-    _rawKeyboard?.removeListener(_listener);
-    _rawKeyboard = null;
+    _HardwareKeyboard?.removeHandler(_listener);
+    _HardwareKeyboard = null;
   }
 }
 
@@ -202,7 +207,7 @@ class Keybinding {
 
   /// Returns `true` if the keys currently pressed match this keybinding.
   bool get isPressed {
-    final keysPressed = RawKeyboard.instance.keysPressed;
+    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
 
     if (isEmpty) {
       if (keysPressed.isEmpty) {
