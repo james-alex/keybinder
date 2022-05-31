@@ -12,8 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  list_utilities: ^1.0.0
-  provider: ^5.0.0
+  list_utilities: ^1.0.1
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:
