@@ -1,5 +1,7 @@
 # keybinder
 
+[![pub package](https://img.shields.io/pub/v/keybinder.svg)](https://pub.dev/packages/keybinder)
+
 A utility class used to bind callbacks to a combination of one or more
 physical keys on a keyboard; utilizing the global
 [[RawKeyboard](https://api.flutter.dev/flutter/services/RawKeyboard-class.html)]
