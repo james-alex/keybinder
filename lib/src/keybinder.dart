@@ -352,13 +352,13 @@ class KeyCode {
   final String? label;
 
   /// A [KeyCode] representing both `alt` keys.
-  static const alt = KeyCode({0x001000700e2, 0x001000700e6}, label: 'alt');
+  static const alt = KeyCode({0x00200000104, 0x00200000105}, label: 'alt');
 
   /// A [KeyCode] representing both `ctrl` keys.
-  static const ctrl = KeyCode({0x001000700e0, 0x001000700e4}, label: 'ctrl');
+  static const ctrl = KeyCode({0x00200000100, 0x00200000101}, label: 'ctrl');
 
   /// A [KeyCode] representing both `shift` keys.
-  static const shift = KeyCode({0x001000700e1, 0x001000700e5}, label: 'shift');
+  static const shift = KeyCode({0x00200000102, 0x00200000103}, label: 'shift');
 
   /// Returns `true` if this and [other] have any of the same [keyId]s.
   bool equals(KeyCode other) => keyIds.any((key) => other.keyIds.contains(key));
