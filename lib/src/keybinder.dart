@@ -11,7 +11,7 @@ class Keybinder {
   /// A reference to the global [HardwareKeyboard] instance.
   ///
   /// If `null`, it's assumed a listener hasn't been added.
-  static HardwareKeyboard? _HardwareKeyboard;
+  static HardwareKeyboard? _hardwareKeyboard;
 
   /// Every [Keybinding]s registered to [Keybinder] and their associated callbacks.
   static final _keybindings = <Keybinding, List<Function>>{};
@@ -22,12 +22,11 @@ class Keybinder {
   /// Adds the listener that handles all registered
   /// callbacks to the [HardwareKeyboard] instance.
   static void _init() {
-    _HardwareKeyboard = HardwareKeyboard.instance..addHandler(_listener);
+    _hardwareKeyboard = HardwareKeyboard.instance..addHandler(_listener);
   }
 
   /// The listener provided to the [HardwareKeyboard] instance.
   static bool _listener(KeyEvent event) {
-
     var handeled = false;
 
     // If any of the registered [Keybinding]s are no longer being pressed,
@@ -88,7 +87,7 @@ class Keybinder {
         'or a [KeybindingEvent].');
 
     // Initialize the [HardwareKeyboard] listener, if it hasn't already been.
-    if (_HardwareKeyboard == null) _init();
+    if (_hardwareKeyboard == null) _init();
 
     // Add the callback to the [_keybindings] map.
     if (_keybindings.containsKey(keybinding)) {
@@ -139,8 +138,8 @@ class Keybinder {
   /// instance if another [Keybinding] is [register]ed.
   static void dispose() {
     _keybindings.clear();
-    _HardwareKeyboard?.removeHandler(_listener);
-    _HardwareKeyboard = null;
+    _hardwareKeyboard?.removeHandler(_listener);
+    _hardwareKeyboard = null;
   }
 }
 
@@ -172,7 +171,7 @@ class Keybinding {
   const Keybinding(this.keyCodes, {this.inclusive = false, this.debugLabel});
 
   /// Creates a [Keybinding] mapped to no keys.
-  factory Keybinding.empty() => Keybinding([]);
+  factory Keybinding.empty() => const Keybinding([]);
 
   /// Creates a new [Keybinding] from [LogicalKeyboardKey]s.
   factory Keybinding.from(
