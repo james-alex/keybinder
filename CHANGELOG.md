@@ -1,3 +1,7 @@
+## [1.0.1] - June 4, 2022
+
+* Migrated to the HardwareKeyboard API, courtesy of @CaptainDario
+
 ## [1.0.0] - March 15, 2021
 
 * Migrated to null-safe code.
